@@ -1,29 +1,28 @@
 {
-  "name": "node-sass-image-functions",
+  "name": "node-sass-asset-functions",
   "version": "0.0.1",
-  "description": "image-* functions for node-sass",
+  "description": "asset functions for node-sass",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:fetch/node-sass-image-functions.git"
+    "url": "git@github.com:fetch/node-sass-asset-functions.git"
   },
   "keywords": [
     "node",
     "image",
     "image-url",
     "image-width",
-    "image-height",
-    "compass"
+    "image-height"
   ],
   "author": "Koen Punt <koen@fetch.nl>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fetch/node-sass-image-functions/issues"
+    "url": "https://github.com/fetch/node-sass-asset-functions/issues"
   },
-  "homepage": "https://github.com/fetch/node-sass-image-functions",
+  "homepage": "https://github.com/fetch/node-sass-asset-functions",
   "dependencies": {
     "image-size": "^0.3.5",
     "node-sass": "^3.2.0"

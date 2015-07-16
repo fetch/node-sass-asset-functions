@@ -1,2 +1,2 @@
-# node-sass-image-functions
-Node SASS Image functions
+# node-sass-asset-functions
+Node SASS Asset functions
