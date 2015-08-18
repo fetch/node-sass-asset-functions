@@ -1,6 +1,6 @@
 {
   "name": "node-sass-asset-functions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "asset functions for node-sass",
   "main": "index.js",
   "scripts": {
@@ -12,10 +12,14 @@
   },
   "keywords": [
     "node",
+    "sass",
+    "assets",
     "image",
     "image-url",
     "image-width",
-    "image-height"
+    "image-height",
+    "font-url",
+    "font-files"
   ],
   "author": "Koen Punt <koen@fetch.nl>",
   "license": "MIT",
