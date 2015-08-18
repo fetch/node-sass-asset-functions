@@ -12,6 +12,13 @@ module.exports = function(options) {
         done(new sass.types.String(url));
       });
     },
+    'inline-image($filename: null, $mime_type: false)': function(filename, mime_type, done) {
+      var src = processor.real_path(filename.getValue(), 'images');
+      var data = fs.readFileSync(src).toString('base64');
+      var mime_string = mime_type.getValue() ? mime_type.getValue() : mime.lookup(src);
+      var base64Image = util.format('url(\'data:%s;base64,%s\')', mime_string, data);
+      done(new sass.types.String(base64Image));
+    },
     'image-width($filename: null)': function(filename) {
       var image_width = processor.image_width(filename.getValue());
       return new sass.types.Number(image_width, 'px');
