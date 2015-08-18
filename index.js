@@ -4,7 +4,8 @@ var fs = require('fs')
   , crypto = require('crypto');
 
 var sass = require('node-sass')
-  , sizeOf = require('image-size');
+  , sizeOf = require('image-size')
+  , mime = require('mime');
 
 function extend(destination, source) {
   for (var property in source)
@@ -155,6 +156,13 @@ module.exports = function(options){
         if(!only_path.getValue()) url = 'url(\'' + url + '\')';
         done(new sass.types.String(url));
       });
+    },
+    'inline-image($filename: null, $only_path: false)': function(filename, only_path, done) {
+      var src = processor.real_path(filename.getValue(), 'images');
+      var data = fs.readFileSync(src).toString('base64');
+      var base64Image = util.format('data:%s;base64,%s', mime.lookup(src), data);
+      if(!only_path.getValue()) base64Image = 'url(\'' + base64Image + '\')';
+      done(new sass.types.String(base64Image));
     },
     'image-width($filename: null)': function(filename) {
       var image_width = processor.image_width(filename.getValue());
