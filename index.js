@@ -86,6 +86,10 @@ Processor.prototype.asset_host = function(filepath, done) {
 };
 
 Processor.prototype.real_path = function(filepath, segment) {
+  var fragmentIndex = filepath.indexOf('#');
+  if(~fragmentIndex){
+    filepath = filepath.substring(0, fragmentIndex);
+  }
   return path.resolve(path.join(this.paths[segment + '_path'], filepath));
 };
 
@@ -125,8 +129,10 @@ Processor.prototype.font_files = function(files, done) {
   };
   var i = 0, parts, ext, dir, file;
   var result = [];
-  for(;i < files.length; ++i){
-    file = files[i];
+
+  var font_url = this.font_url.bind(this);
+
+  async.map(files, function(file, done){
     parts = file.split('#');
     filename = parts[0];
     anchor = parts[1];
@@ -136,13 +142,12 @@ Processor.prototype.font_files = function(files, done) {
     if (format_map[format]) {
       format = format_map[format];
     }
-    this.font_url(file, function(url){
-      result[i] = {url: url, format: format};
-      if(result.length === files.length){
-        done(result);
-      }
+    font_url(file, function(url){
+      done(null, {url: url, format: format});
     });
-  }
+  }, function(err, results){
+    done(results);
+  });
 };
 
 module.exports = function(options){
