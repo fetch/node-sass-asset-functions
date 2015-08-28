@@ -4,7 +4,8 @@ var fs = require('fs')
   , crypto = require('crypto');
 
 var sass = require('node-sass')
-  , sizeOf = require('image-size');
+  , sizeOf = require('image-size')
+  , async = require('async');
 
 function extend(destination, source) {
   for (var property in source)
