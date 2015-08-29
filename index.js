@@ -30,11 +30,11 @@ Processor.prototype.asset_cache_buster = function(http_path, real_path, done) {
   }
   var http_path_url = url.parse(http_path);
   this.options.asset_cache_buster(http_path, real_path, function(value) {
-    if (typeof value == 'string') {
-      http_path_url.search = value;
-    } else {
+    if (typeof value == 'object') {
       http_path_url.path = value.path;
       http_path_url.search = value.query;
+    } else {
+      http_path_url.search = value;
     }
     done(url.format(http_path_url));
   });

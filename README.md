@@ -98,7 +98,7 @@ sass.render({
     asset_cache_buster: function(http_path, real_path, done){
       fs.stat(real_path, function(err, stats) {
         if (err) {
-          done('');
+          done();
         } else {
           var extname = path.extname(http_path)
             , basename = path.basename(http_path, extname);
