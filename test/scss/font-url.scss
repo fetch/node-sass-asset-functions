@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'SomeFont';
+  src: font-url('SomeFont.eot?#iefix');
+}
+
+body {
+  content: '#{font-url('SomeFont.eot?#iefix', $only-path: true)}';
+}

@@ -1,5 +1,4 @@
-var fs = require('fs')
-  , path = require('path')
+var path = require('path')
   , util = require('util')
   , url = require('url');
 
@@ -42,18 +41,12 @@ Processor.prototype.asset_cache_buster = function(http_path, real_path, done) {
 };
 
 Processor.prototype.asset_host = function(filepath, done) {
-  if (!this.options.asset_host) {
-    return done(filepath);
+  if (typeof this.options.asset_host !== 'function') {
+    throw new Error('asset_host should be a function');
   }
-  var resolve = function(host) {
+  this.options.asset_host(function(host){
     done(url.resolve(host, filepath));
-  };
-  var asset_host = this.options.asset_host;
-  if (typeof asset_host == 'function') {
-    asset_host(filepath, resolve);
-  } else {
-    resolve(asset_host);
-  }
+  });
 };
 
 Processor.prototype.real_path = function(filepath, segment) {
@@ -78,14 +71,19 @@ Processor.prototype.image_height = function(filepath) {
 
 Processor.prototype.asset_url = function(filepath, segment, done) {
   var http_path = this.http_path(filepath, segment);
-  var asset_host = function(http_path){
-    this.asset_host(http_path, done);
+
+  var next = function(http_path){
+    if (this.options.asset_host) {
+      this.asset_host(http_path, done);
+    } else {
+      done(http_path);
+    }
   }.bind(this);
 
-  if(this.options.asset_cache_buster) {
-    this.asset_cache_buster(http_path, this.real_path(filepath, segment), asset_host);
+  if (this.options.asset_cache_buster) {
+    this.asset_cache_buster(http_path, this.real_path(filepath, segment), next);
   } else {
-    done(asset_host);
+    next(http_path);
   }
 };
 
@@ -118,6 +116,7 @@ Processor.prototype.font_files = function(files, done) {
     if (font_format_map[format]) {
       format = font_format_map[format];
     }
+
     font_url(file, function(url) {
       done(null, {url: url, format: format});
     });
