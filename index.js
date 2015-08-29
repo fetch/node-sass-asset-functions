@@ -44,7 +44,7 @@ Processor.prototype.asset_host = function(filepath, done) {
   if (typeof this.options.asset_host !== 'function') {
     throw new Error('asset_host should be a function');
   }
-  this.options.asset_host(function(host){
+  this.options.asset_host(filepath, function(host){
     done(url.resolve(host, filepath));
   });
 };

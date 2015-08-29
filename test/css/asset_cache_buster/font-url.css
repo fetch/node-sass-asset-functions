@@ -1,0 +1,6 @@
+@font-face {
+  font-family: 'SomeFont';
+  src: url('/fonts/SomeFont.eot?v=123#iefix'); }
+
+body {
+  content: "/fonts/SomeFont.eot?v=123#iefix"; }

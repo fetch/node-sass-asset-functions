@@ -1,0 +1,3 @@
+@font-face {
+  font-family: 'SomeFont';
+  src: url('/fonts/SomeFont.woff2?v=123') format('woff2'), url('/fonts/SomeFont.woff?v=123') format('woff'), url('/fonts/SomeFont.ttf?v=123') format('truetype'), url('/fonts/SomeFont.svg?v=123#SomeFont') format('svg'); }

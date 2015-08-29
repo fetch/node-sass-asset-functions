@@ -1,0 +1,5 @@
+body {
+  background: url('http://example.com/images/barney.gif') center center no-repeat; }
+
+#barney {
+  content: "http://example.com/images/barney.gif"; }
