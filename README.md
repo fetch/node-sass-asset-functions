@@ -25,7 +25,7 @@ sass.render({
 }, function(err, result) { /*...*/ });
 ```
 
-There are a few options you can pass to the module, shown here with the defaults:
+You can specify the paths of your resources using the following options (shown with defaults):
 
 ```js
 {
@@ -46,6 +46,67 @@ sass.render({
   functions: assetFunctions({
     images_path: 'public/img',
     http_images_path: '/img'
+  }),
+  file: scss_filename,
+  [, options..]
+}, function(err, result) { /*...*/ });
+```
+
+### Additional options
+
+#### `asset_host`: a function which completes with a string used as asset host.
+
+```js
+sass.render({
+  functions: assetFunctions({
+    asset_host: function(http_path, done){
+      done('http://assets.example.com');
+      // or use the supplied path to calculate a host
+      done('http://assets' + (http_path.length % 4) + '.example.com');
+    }
+  }),
+  file: scss_filename,
+  [, options..]
+}, function(err, result) { /*...*/ });
+```
+
+#### `asset_cache_buster`: a function to rewrite the asset path
+
+When this function returns a string, it's set as the query of the path. When returned an object, `path` and `query` will be used.
+
+```js
+sass.render({
+  functions: assetFunctions({
+    asset_cache_buster: function(http_path, real_path, done){
+      done('v=123');
+    }
+  }),
+  file: scss_filename,
+  [, options..]
+}, function(err, result) { /*...*/ });
+```
+
+##### A more advanced example:
+
+Here we include the modification time of the file in the path. So `/images/myimage.png` would become `/images/myimage-1440855617365.png`.
+
+```js
+var path = require('path')
+  , fs = require('fs');
+sass.render({
+  functions: assetFunctions({
+    asset_cache_buster: function(http_path, real_path, done){
+      fs.stat(real_path, function(err, stats) {
+        if (err) {
+          done('');
+        } else {
+          var extname = path.extname(http_path)
+            , basename = path.basename(http_path, extname);
+          var new_name = basename + '-' + (+stats.mtime) + extname;
+          done({path: path.join(path.dirname(http_path), new_name), query: null});
+        }
+      });
+    }
   }),
   file: scss_filename,
   [, options..]
