@@ -1,10 +1,8 @@
 var path = require('path')
-  , util = require('util')
   , url = require('url');
 
 var sass = require('node-sass')
-  , sizeOf = require('image-size')
-  , async = require('async');
+  , sizeOf = require('image-size');
 
 var Processor = function(options) {
   this.options = options || {};
@@ -17,8 +15,8 @@ var Processor = function(options) {
   };
 
   var path;
-  for(path in this.paths){
-    if(this.options[path]){
+  for(path in this.paths) {
+    if(this.options[path]) {
       this.paths[path] = this.options[path];
     }
   }
@@ -44,7 +42,7 @@ Processor.prototype.asset_host = function(filepath, done) {
   if (typeof this.options.asset_host !== 'function') {
     throw new Error('asset_host should be a function');
   }
-  this.options.asset_host(filepath, function(host){
+  this.options.asset_host(filepath, function(host) {
     done(url.resolve(host, filepath));
   });
 };
@@ -72,7 +70,7 @@ Processor.prototype.image_height = function(filepath) {
 Processor.prototype.asset_url = function(filepath, segment, done) {
   var http_path = this.http_path(filepath, segment);
 
-  var next = function(http_path){
+  var next = function(http_path) {
     if (this.options.asset_host) {
       this.asset_host(http_path, done);
     } else {
@@ -95,34 +93,44 @@ Processor.prototype.font_url = function(filepath, done) {
   this.asset_url(filepath, 'fonts', done);
 };
 
-var font_format_map = {
-  eot: 'embedded-opentype',
-  ttf: 'truetype'
+var FONT_TYPES = {
+  woff: 'woff',
+  woff2: 'woff2',
+  otf: 'opentype',
+  opentype: 'opentype',
+  ttf: 'truetype',
+  truetype: 'truetype',
+  svg: 'svg',
+  eot: 'embedded-opentype'
 };
 
 Processor.prototype.font_files = function(files, done) {
-  var i = 0, parts, ext, dir, file;
-  var result = [];
+  var processed_files = [];
 
-  var font_url = this.font_url.bind(this);
+  var complete = function(index, type){
+    return function(url) {
+      processed_files.push({index: index, url: url, type: type});
+      if (processed_files.length == files.length) {
+        done(processed_files);
+      }
+    };
+  };
 
-  async.map(files, function(file, done) {
-    parts = file.split('#');
-    filename = parts[0];
-    anchor = parts[1];
-    ext = path.extname(filename);
-    format = ext.substring(1);
+  var i = 0, parts, ext, file, next, type;
+  for (; i < files.length; ++i) {
+    file = files[i];
+    next = files[i + 1];
 
-    if (font_format_map[format]) {
-      format = font_format_map[format];
+    parts = url.parse(file);
+    if (FONT_TYPES[next]) {
+      type = files.splice(i + 1, 1);
+    } else {
+      ext = path.extname(parts.path);
+      type = ext.substring(1);
     }
-
-    font_url(file, function(url) {
-      done(null, {url: url, format: format});
-    });
-  }, function(err, results) {
-    done(results);
-  });
+    type = FONT_TYPES[type];
+    this.font_url(file, complete(i, type));
+  }
 };
 
 module.exports = function(options) {
@@ -151,16 +159,17 @@ module.exports = function(options) {
       });
     },
     'font-files($filenames...)': function(list, done) {
-      var l = list.getLength(), i = 0, filenames = [];
-      for(;i < l;++i) {
+      var len = list.getLength(), i = 0, filenames = [];
+      for(; i < len; ++i) {
         filenames[i] = list.getValue(i).getValue();
       }
 
       processor.font_files(filenames, function(files) {
-        list = new sass.types.List(files.length);
+        len = files.length;
         i = 0;
-        for (;i < l;++i) {
-          list.setValue(i, new sass.types.String('url(\'' + files[i].url + '\') format(\'' + files[i].format + '\')'));
+        list = new sass.types.List(len);
+        for (; i < len; ++i) {
+          list.setValue(files[i].index, new sass.types.String('url(\'' + files[i].url + '\') format(\'' + files[i].type + '\')'));
         }
         done(list);
       });
