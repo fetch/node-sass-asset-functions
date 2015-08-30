@@ -88,21 +88,27 @@ sass.render({
 
 ##### A more advanced example:
 
-Here we include the modification time of the file in the path. So `/images/myimage.png` would become `/images/myimage-1440855617365.png`.
+Here we include the file's  hexdigest in the path, using the [`hexdigest`](https://github.com/koenpunt/node-hexdigest) module.
+
+For example, `/images/myimage.png` would become `/images/myimage-8557f1c9b01dd6fd138ba203e6a953df6a222af3.png`.
 
 ```js
 var path = require('path')
-  , fs = require('fs');
+  , fs = require('fs')
+  , hexdigest = require('hexdigest');
+
 sass.render({
   functions: assetFunctions({
     asset_cache_buster: function(http_path, real_path, done){
-      fs.stat(real_path, function(err, stats) {
+      hexdigest(real_path, 'sha1', function(err, digest) {
         if (err) {
+          // an error occurred, maybe the file doesn't exists.
+          // Calling `done` without arguments will result in an unmodified path.
           done();
         } else {
           var extname = path.extname(http_path)
             , basename = path.basename(http_path, extname);
-          var new_name = basename + '-' + (+stats.mtime) + extname;
+          var new_name = basename + '-' + digest + extname;
           done({path: path.join(path.dirname(http_path), new_name), query: null});
         }
       });
