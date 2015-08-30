@@ -16,7 +16,7 @@ Basic usage is as easy as setting the `functions` property:
 
 ```js
 var sass = require('node-sass');
-var assetFunctions = require('node-sass-assets-functions');
+var assetFunctions = require('node-sass-asset-functions');
 
 sass.render({
   functions: assetFunctions(),
@@ -40,7 +40,7 @@ So if for example your images reside in `public/img` instead of `images/images`,
 
 ```js
 var sass = require('node-sass');
-var assetFunctions = require('node-sass-assets-functions');
+var assetFunctions = require('node-sass-asset-functions');
 
 sass.render({
   functions: assetFunctions({
@@ -127,7 +127,7 @@ sass.render({
 Using this module with Grunt is just as easy:
 
 ```js
-var assetFunctions = require('node-sass-assets-functions');
+var assetFunctions = require('node-sass-asset-functions');
 
 module.exports = function(grunt){
   grunt.initConfig({
