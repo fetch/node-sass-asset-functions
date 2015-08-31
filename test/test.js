@@ -44,13 +44,19 @@ var asset_host = function(http_path, done) {
   done('http://example.com');
 };
 
-var asset_cache_buster = function(http_path, real_path, done) {
+var query_asset_cache_buster = function(http_path, real_path, done) {
   setTimeout(function() {
-    if (http_path.substr(-4, 4) == '.gif') {
-      done({path: http_path.replace(/\.gif$/, '-v123.gif'), query: null});
-    } else {
-      done('v=123');
-    }
+    done('v=123');
+  }, 1000 * Math.random());
+};
+
+var path_asset_cache_buster = function(http_path, real_path, done) {
+  setTimeout(function() {
+    var extname = path.extname(http_path)
+      , basename = path.basename(http_path, extname)
+      , dirname = path.dirname(http_path);
+    
+    done({path: path.join(dirname, basename + '-v123') + extname, query: null});
   }, 1000 * Math.random());
 };
 
@@ -65,10 +71,15 @@ fs.readdir(sassDir, function(err, files) {
       if(err) console.error(err);
       assertEqualsFile(result.css, path.join(cssDir, 'asset_host', file.replace(/\.scss$/, '.css')));
     });
-    render(file, {asset_cache_buster: asset_cache_buster}, function(err, file, result) {
+    render(file, {asset_cache_buster: query_asset_cache_buster}, function(err, file, result) {
       assert.equal(err, null);
       if(err) console.error(err);
-      assertEqualsFile(result.css, path.join(cssDir, 'asset_cache_buster', file.replace(/\.scss$/, '.css')));
+      assertEqualsFile(result.css, path.join(cssDir, 'asset_cache_buster', 'query', file.replace(/\.scss$/, '.css')));
+    });
+    render(file, {asset_cache_buster: path_asset_cache_buster}, function(err, file, result) {
+      assert.equal(err, null);
+      if(err) console.error(err);
+      assertEqualsFile(result.css, path.join(cssDir, 'asset_cache_buster', 'path', file.replace(/\.scss$/, '.css')));
     });
   });
 });

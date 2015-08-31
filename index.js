@@ -33,7 +33,7 @@ Processor.prototype.asset_cache_buster = function(http_path, real_path, done) {
       var parsed_path = url.parse(value.path);
       new_url = {
         pathname: parsed_path.pathname,
-        search: value.query || parsed_path.query
+        search: value.query || http_path_url.search
       };
     } else {
       new_url = {
@@ -56,11 +56,8 @@ Processor.prototype.asset_host = function(filepath, done) {
 };
 
 Processor.prototype.real_path = function(filepath, segment) {
-  var fragmentIndex = filepath.indexOf('#');
-  if (~fragmentIndex) {
-    filepath = filepath.substring(0, fragmentIndex);
-  }
-  return path.resolve(path.join(this.paths[segment + '_path'], filepath));
+  var sanitized_filepath = filepath.replace(/(#|\?).+$/, '');
+  return path.resolve(this.paths[segment + '_path'], sanitized_filepath);
 };
 
 Processor.prototype.http_path = function(filepath, segment) {
