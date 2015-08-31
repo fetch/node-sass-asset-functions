@@ -1,5 +1,5 @@
 body {
-  background: url('/images/barney.gif?v=123') center center no-repeat; }
+  background: url('/images/barney-v123.gif') center center no-repeat; }
 
 #barney {
-  content: "/images/barney.gif?v=123"; }
+  content: "/images/barney-v123.gif"; }

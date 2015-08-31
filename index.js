@@ -26,15 +26,23 @@ Processor.prototype.asset_cache_buster = function(http_path, real_path, done) {
   if (typeof this.options.asset_cache_buster !== 'function') {
     throw new Error('asset_cache_buster should be a function');
   }
-  var http_path_url = url.parse(http_path);
+  var http_path_url = url.parse(http_path), new_url;
+
   this.options.asset_cache_buster(http_path, real_path, function(value) {
     if (typeof value == 'object') {
-      http_path_url.path = value.path;
-      http_path_url.search = value.query;
+      var parsed_path = url.parse(value.path);
+      new_url = {
+        pathname: parsed_path.pathname,
+        search: value.query || parsed_path.query
+      };
     } else {
-      http_path_url.search = value;
+      new_url = {
+        pathname: http_path_url.pathname,
+        search: value
+      };
     }
-    done(url.format(http_path_url));
+
+    done(url.format(new_url));
   });
 };
 
@@ -68,20 +76,31 @@ Processor.prototype.image_height = function(filepath) {
 };
 
 Processor.prototype.asset_url = function(filepath, segment, done) {
-  var http_path = this.http_path(filepath, segment);
+  var http_path = sanitized_http_path = this.http_path(filepath, segment);
+  var real_path = this.real_path(filepath, segment);
+
+  var fragmentIndex = sanitized_http_path.indexOf('#'), fragment = '';
+  if (~fragmentIndex) {
+    fragment = sanitized_http_path.substring(fragmentIndex);
+    sanitized_http_path = sanitized_http_path.substring(0, fragmentIndex);
+  }
+
+  var restoreFragment = function(url) {
+    done(url + fragment);
+  };
 
   var next = function(http_path) {
     if (this.options.asset_host) {
-      this.asset_host(http_path, done);
+      this.asset_host(http_path, restoreFragment);
     } else {
-      done(http_path);
+      restoreFragment(http_path);
     }
   }.bind(this);
 
   if (this.options.asset_cache_buster) {
-    this.asset_cache_buster(http_path, this.real_path(filepath, segment), next);
+    this.asset_cache_buster(sanitized_http_path, real_path, next);
   } else {
-    next(http_path);
+    next(sanitized_http_path);
   }
 };
 
@@ -107,7 +126,7 @@ var FONT_TYPES = {
 Processor.prototype.font_files = function(files, done) {
   var processed_files = [];
 
-  var complete = function(index, type){
+  var complete = function(index, type) {
     return function(url) {
       processed_files.push({index: index, url: url, type: type});
       if (processed_files.length == files.length) {
