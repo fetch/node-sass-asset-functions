@@ -157,11 +157,11 @@ module.exports = function(options){
         done(new sass.types.String(url));
       });
     },
-    'inline-image($filename: null, $only_path: false)': function(filename, only_path, done) {
+    'inline-image($filename: null, $mime_type: false)': function(filename, mime_type, done) {
       var src = processor.real_path(filename.getValue(), 'images');
       var data = fs.readFileSync(src).toString('base64');
-      var base64Image = util.format('data:%s;base64,%s', mime.lookup(src), data);
-      if(!only_path.getValue()) base64Image = 'url(\'' + base64Image + '\')';
+      var mime_string = mime_type.getValue() ? mime_type.getValue() : mime.lookup(src);
+      var base64Image = util.format('url(\'data:%s;base64,%s\')', mime_string, data);
       done(new sass.types.String(base64Image));
     },
     'image-width($filename: null)': function(filename) {
