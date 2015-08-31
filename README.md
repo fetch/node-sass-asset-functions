@@ -1,4 +1,4 @@
-# Node SASS Asset functions ![Travis CS](https://api.travis-ci.org/fetch/node-sass-asset-functions.svg) ![npmjs](https://badge.fury.io/js/node-sass-asset-functions.svg)
+# Node SASS Asset functions [![Build Status](https://travis-ci.org/fetch/node-sass-asset-functions.svg?branch=master)](https://travis-ci.org/fetch/node-sass-asset-functions) [![npmjs](https://badge.fury.io/js/node-sass-asset-functions.svg)](https://www.npmjs.com/package/node-sass-asset-functions)
 
 To ease the transitioning from Compass to Libsass, this module provides some of Compass' asset functions for [node-sass](https://github.com/sass/node-sass)
 
