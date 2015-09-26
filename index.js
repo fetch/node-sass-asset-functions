@@ -37,7 +37,7 @@ module.exports = function(options) {
         i = 0;
         list = new sass.types.List(len);
         for (; i < len; ++i) {
-          list.setValue(files[i].index, new sass.types.String('url(\'' + files[i].url + '\') format(\'' + files[i].type + '\')'));
+          list.setValue(i, new sass.types.String('url(\'' + files[i].url + '\') format(\'' + files[i].type + '\')'));
         }
         done(list);
       });
