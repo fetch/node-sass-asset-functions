@@ -18,13 +18,15 @@ module.exports = function(options) {
         done(new sass.types.String('url(\'' + dataUrl + '\')'));
       });
     },
-    'image-width($filename)': function(filename) {
-      var image_width = processor.image_width(filename.getValue());
-      return new sass.types.Number(image_width, 'px');
+    'image-width($filename)': function(filename, done) {
+      processor.image_width(filename.getValue(), function(image_width) {
+        done(new sass.types.Number(image_width, 'px'));
+      });
     },
-    'image-height($filename)': function(filename) {
-      var image_height = processor.image_height(filename.getValue());
-      return new sass.types.Number(image_height, 'px');
+    'image-height($filename)': function(filename, done) {
+      processor.image_height(filename.getValue(), function(image_height) {
+        done(new sass.types.Number(image_height, 'px'));
+      });
     },
     'font-url($filename, $only-path: false)': function(filename, only_path, done) {
       processor.font_url(filename.getValue(), function(url) {
