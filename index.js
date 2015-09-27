@@ -6,27 +6,27 @@ module.exports = function(options) {
   var processor = new Processor(opts);
 
   return {
-    'image-url($filename: null, $only_path: false)': function(filename, only_path, done) {
+    'image-url($filename, $only_path: false)': function(filename, only_path, done) {
       processor.image_url(filename.getValue(), function(url) {
         if(!only_path.getValue()) url = 'url(\'' + url + '\')';
         done(new sass.types.String(url));
       });
     },
-    'inline-image($filename: null, $mime_type: null)': function(filename, mime_type, done) {
+    'inline-image($filename, $mime_type: null)': function(filename, mime_type, done) {
       mime_type = mime_type instanceof sass.types.Null ? null : mime_type.getValue();
       processor.inline_image(filename.getValue(), mime_type, function(dataUrl) {
         done(new sass.types.String('url(\'' + dataUrl + '\')'));
       });
     },
-    'image-width($filename: null)': function(filename) {
+    'image-width($filename)': function(filename) {
       var image_width = processor.image_width(filename.getValue());
       return new sass.types.Number(image_width, 'px');
     },
-    'image-height($filename: null)': function(filename) {
+    'image-height($filename)': function(filename) {
       var image_height = processor.image_height(filename.getValue());
       return new sass.types.Number(image_height, 'px');
     },
-    'font-url($filename: null, $only-path: false)': function(filename, only_path, done) {
+    'font-url($filename, $only-path: false)': function(filename, only_path, done) {
       processor.font_url(filename.getValue(), function(url) {
         if(!only_path.getValue()) url = 'url(\'' + url + '\')';
         done(new sass.types.String(url));
