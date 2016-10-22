@@ -4,11 +4,11 @@
   "description": "asset functions for node-sass",
   "main": "index.js",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:fetch/node-sass-asset-functions.git"
+    "url": "https://github.com/fetch/node-sass-asset-functions.git"
   },
   "keywords": [
     "node",
