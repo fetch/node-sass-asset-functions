@@ -56,28 +56,28 @@ describe('basic', function() {
   })
 })
 
-// describe('asset_host', function() {
-//   files.forEach(function(file) {
-//     test(file, function(done) {
-//       equalsFile(file, 'asset_host', { asset_host: asset_host })
-//     })
-//   })
-// })
-//
-// describe('asset_cache_buster', function() {
-//   describe('using query', function() {
-//     files.forEach(function(file) {
-//       test(file, function(done) {
-//         equalsFile(file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster })
-//       })
-//     })
-//   })
-//
-//   describe('using path', function() {
-//     files.forEach(function(file) {
-//       test(file, function(done) {
-//         equalsFile(file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster })
-//       })
-//     })
-//   })
-// })
+describe('asset_host', function() {
+  files.forEach(function(file) {
+    test(file, function(done) {
+      equalsFile(file, 'asset_host', { asset_host: asset_host }, done)
+    })
+  })
+})
+
+describe('asset_cache_buster', function() {
+  describe('using query', function() {
+    files.forEach(function(file) {
+      test(file, function(done) {
+        equalsFile(file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster }, done)
+      })
+    })
+  })
+
+  describe('using path', function() {
+    files.forEach(function(file) {
+      test(file, function(done) {
+        equalsFile(file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster }, done)
+      })
+    })
+  })
+})
