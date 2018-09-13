@@ -29,7 +29,9 @@
   "homepage": "https://github.com/fetch/node-sass-asset-functions",
   "dependencies": {
     "image-size": "^0.3.5",
-    "mime": "^1.3.4",
+    "mime": "^1.3.4"
+  },
+  "optionalDependencies": {
     "node-sass": ">= 3.2 < 5"
   },
   "devDependencies": {
