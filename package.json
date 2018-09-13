@@ -31,10 +31,9 @@
     "image-size": "^0.3.5",
     "mime": "^1.3.4"
   },
-  "optionalDependencies": {
-    "node-sass": ">= 3.2 < 5"
-  },
   "devDependencies": {
-    "jest": "^16.0.2"
+    "jest": "^23.6.0",
+    "node-sass": "^4.9.3",
+    "sass": "^1.13.4"
   }
 }
