@@ -6,10 +6,11 @@ var renderAsync = function(sass, file, options, done) {
   options = options || {}
   options.images_path = __dirname + '/images'
   options.fonts_path = __dirname + '/fonts'
+  options.implemantation = sass
 
   return sass.render({
-    functions: assetFunctions(options, sass),
-    file: __dirname + '/scss/' + file
+    functions: assetFunctions(options),
+    file: __dirname + '/scss/' + file,
   }, done)
 }
 
@@ -50,13 +51,13 @@ var path_asset_cache_buster = function(http_path, real_path, done) {
 
 var files = fs.readdirSync(sassDir)
 
-describe.each(['node-sass', 'sass'])('with require("%s")', function(module) {
-  var impl = require(module)
+describe.each(['node-sass', 'sass'])('with require("%s")', function(impl) {
+  var sass = require(impl)
 
   describe('basic', function() {
     files.forEach(function(file) {
       test(file, function(done) {
-        equalsFileAsync(impl, file, 'basic', {}, done)
+        equalsFileAsync(sass, file, 'basic', {}, done)
       })
     })
   })
@@ -64,7 +65,7 @@ describe.each(['node-sass', 'sass'])('with require("%s")', function(module) {
   describe('asset_host', function() {
     files.forEach(function(file) {
       test(file, function(done) {
-        equalsFileAsync(impl, file, 'asset_host', { asset_host: asset_host }, done)
+        equalsFileAsync(sass, file, 'asset_host', { asset_host: asset_host }, done)
       })
     })
   })
@@ -73,7 +74,7 @@ describe.each(['node-sass', 'sass'])('with require("%s")', function(module) {
     describe('using query', function() {
       files.forEach(function(file) {
         test(file, function(done) {
-          equalsFileAsync(impl, file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster }, done)
+          equalsFileAsync(sass, file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster }, done)
         })
       })
     })
@@ -81,7 +82,7 @@ describe.each(['node-sass', 'sass'])('with require("%s")', function(module) {
     describe('using path', function() {
       files.forEach(function(file) {
         test(file, function(done) {
-          equalsFileAsync(impl, file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster }, done)
+          equalsFileAsync(sass, file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster }, done)
         })
       })
     })

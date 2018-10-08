@@ -1,9 +1,18 @@
 var Processor = require('./lib/processor');
 
-module.exports = function(options, impl) {
+function omit(original, omitted) {
+  return Object.keys(original).reduce(function (result, key) {
+    if (key !== omitted) {
+      result[key] = original[key];
+    }
+    return result;
+  }, {});
+}
+
+module.exports = function(options) {
   var opts = options || {};
-  var processor = new Processor(opts);
-  var sass = impl || require('node-sass')
+  var processor = new Processor(omit(opts, 'implementation'));
+  var sass = opts.implementation || require('node-sass')
 
   return {
     'image-url($filename, $only_path: false)': function(filename, only_path, done) {
