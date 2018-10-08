@@ -1,6 +1,6 @@
 # Node SASS Asset functions [![Build Status](https://travis-ci.org/fetch/node-sass-asset-functions.svg?branch=master)](https://travis-ci.org/fetch/node-sass-asset-functions) [![npmjs](https://badge.fury.io/js/node-sass-asset-functions.svg)](https://www.npmjs.com/package/node-sass-asset-functions)
 
-To ease the transitioning from Compass to Libsass, this module provides some of Compass' asset functions for [node-sass](https://github.com/sass/node-sass)
+To ease the transitioning from Compass to Libsass, this module provides some of Compass' asset functions for [node-sass](https://github.com/sass/node-sass) or [sass](https://github.com/sass/sass)
 
 _**NB** Please note that the `functions` option of node-sass is still experimental (>= v3.0.0)._
 
@@ -80,6 +80,24 @@ sass.render({
     asset_cache_buster: function(http_path, real_path, done){
       done('v=123');
     }
+  }),
+  file: scss_filename,
+  [, options..]
+}, function(err, result) { /*...*/ });
+```
+
+#### `implementation`: a function to switch sass implementation
+
+If you like to use other sass implementation (like `sass`), you can use `implementation` option to pass the module.
+
+When you omit `implementation` option, `node-sass` ( version `^4.9.3` ) is implicitly used. ( See `devDependencies` of [package.json](https://github.com/fetch/node-sass-asset-functions/blob/master/package.json) )
+
+```js
+var sass = require('sass')
+
+sass.render({
+  functions: assetFunctions({
+    implementation: sass,
   }),
   file: scss_filename,
   [, options..]
