@@ -1,9 +1,9 @@
-var sass = require('node-sass');
 var Processor = require('./lib/processor');
 
 module.exports = function(options) {
   var opts = options || {};
   var processor = new Processor(opts);
+  var sass = opts.implementation || require('node-sass');
 
   return {
     'image-url($filename, $only_path: false)': function(filename, only_path, done) {

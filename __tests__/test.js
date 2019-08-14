@@ -1,17 +1,26 @@
 var fs = require('fs')
 var path = require('path')
-var sass = require('node-sass')
 var assetFunctions = require('../')
 
 var renderAsync = function(file, options, done) {
   options = options || {}
   options.images_path = __dirname + '/images'
   options.fonts_path = __dirname + '/fonts'
+  var sass = options.implementation || require('node-sass');
 
   return sass.render({
     functions: assetFunctions(options),
     file: __dirname + '/scss/' + file
   }, done)
+}
+
+var normalize = function(s) {
+  if (!s) {
+    return s
+  }
+  return s.replace(/(\r\n|\n|\r)/gm, '')
+    .replace(/\s\}/gm, '}')
+    .replace(/'/gm, "\"")
 }
 
 var equalsFileAsync = function(file, suite, options, done) {
@@ -20,7 +29,7 @@ var equalsFileAsync = function(file, suite, options, done) {
     var cssPath = path.join(cssDir, suite, file.replace(/\.scss$/, '.css'))
     fs.readFile(cssPath, function(err, expected) {
       expect(err).toBeNull()
-      expect(result.css.toString()).toEqual(expected.toString())
+      expect(normalize(result.css.toString())).toEqual(normalize(expected.toString()))
       done()
     })
   })
@@ -51,36 +60,40 @@ var path_asset_cache_buster = function(http_path, real_path, done) {
 
 var files = fs.readdirSync(sassDir)
 
-describe('basic', function() {
-  files.forEach(function(file) {
-    test(file, function(done) {
-      equalsFileAsync(file, 'basic', {}, done)
-    })
-  })
-})
+describe.each(['node-sass', 'sass'])('with require("%s")', function(impl) {
 
-describe('asset_host', function() {
-  files.forEach(function(file) {
-    test(file, function(done) {
-      equalsFileAsync(file, 'asset_host', { asset_host: asset_host }, done)
-    })
-  })
-})
-
-describe('asset_cache_buster', function() {
-  describe('using query', function() {
+  describe('basic', function() {
     files.forEach(function(file) {
       test(file, function(done) {
-        equalsFileAsync(file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster }, done)
+        equalsFileAsync(file, 'basic', {implementation: require(impl)}, done)
       })
     })
   })
 
-  describe('using path', function() {
+  describe('asset_host', function() {
     files.forEach(function(file) {
       test(file, function(done) {
-        equalsFileAsync(file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster }, done)
+        equalsFileAsync(file, 'asset_host', { asset_host: asset_host, implementation: require(impl) }, done)
       })
     })
   })
+
+  describe('asset_cache_buster', function() {
+    describe('using query', function() {
+      files.forEach(function(file) {
+        test(file, function(done) {
+          equalsFileAsync(file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster, implementation: require(impl) }, done)
+        })
+      })
+    })
+
+    describe('using path', function() {
+      files.forEach(function(file) {
+        test(file, function(done) {
+          equalsFileAsync(file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster, implementation: require(impl) }, done)
+        })
+      })
+    })
+  })
+
 })
