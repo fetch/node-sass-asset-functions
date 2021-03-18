@@ -1,7 +1,7 @@
 name: Verify
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dart-sass ]
   pull_request:
     branches: [ master ]
 
