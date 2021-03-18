@@ -1,0 +1,26 @@
+name: Verify
+on:
+  push:
+    branches: [ master, dart-sass ]
+  pull_request:
+    branches: [ master, dart-sass ]
+
+jobs:
+  verify:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2.1.4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - name: Run Lint and Test
+      run: npm run lint && npm test
