@@ -1,86 +1,136 @@
-var fs = require('fs')
-var path = require('path')
-var sass = require('node-sass')
-var assetFunctions = require('../')
+/**
+ * Test driver.
+ */
+/* eslint-env jest */
 
-var renderAsync = function(file, options, done) {
-  options = options || {}
-  options.images_path = __dirname + '/images'
-  options.fonts_path = __dirname + '/fonts'
+const fs = require('fs');
+const path = require('path');
+const defaultSass = require('node-sass');
+const dartSass = require('sass');
+const assetFunctions = require('../');
+
+const sassDir = path.join(__dirname, 'scss');
+const cssDir = path.join(__dirname, 'css');
+const dartSassOpts = { sass: dartSass };
+const files = fs.readdirSync(sassDir);
+
+function renderAsync (file, options = {}, done) {
+  const { sass = defaultSass } = options;
+
+  options.images_path = `${__dirname}/images`;
+  options.fonts_path = `${__dirname}/fonts`;
 
   return sass.render({
     functions: assetFunctions(options),
-    file: __dirname + '/scss/' + file
-  }, done)
+    file: `${__dirname}/scss/${file}` // dart-sass will not find w/o jest testEnvironment 'node'
+  }, done);
 }
 
-var equalsFileAsync = function(file, suite, options, done) {
-  renderAsync(file, options, function(err, result) {
-    expect(err).toBeNull()
-    var cssPath = path.join(cssDir, suite, file.replace(/\.scss$/, '.css'))
-    fs.readFile(cssPath, function(err, expected) {
-      expect(err).toBeNull()
-      expect(result.css.toString()).toEqual(expected.toString())
-      done()
-    })
-  })
+function equalsFileAsync (file, suite, options, done) {
+  renderAsync(file, options, (err, result) => {
+    expect(err).toBeNull();
+    if (err) {
+      return done(err);
+    }
+    const cssPath = path.join(cssDir, suite, file.replace(/\.scss$/, '.css'));
+    fs.readFile(cssPath, (err, expected) => {
+      expect(err).toBeNull();
+
+      const rendered = result.css.toString();
+      const raw = expected.toString();
+
+      // eliminate all spaces and quotes from the comparison
+      const stripRendered = rendered.replace(/\s+|"|'/g, '');
+      const stripRaw = raw.replace(/\s+|"|'/g, '');
+
+      expect(stripRendered).toEqual(stripRaw);
+      done(err);
+    });
+  });
 }
 
-var sassDir = path.join(__dirname, 'scss')
-var cssDir = path.join(__dirname, 'css')
-
-var asset_host = function(http_path, done) {
-  done('http://example.com')
+function asset_host (http_path, done) {
+  done('http://example.com');
 }
 
-var query_asset_cache_buster = function(http_path, real_path, done) {
-  setTimeout(function() {
-    done('v=123')
-  }, 10)
+function query_asset_cache_buster (http_path, real_path, done) {
+  setTimeout(done, 10, 'v=123');
 }
 
-var path_asset_cache_buster = function(http_path, real_path, done) {
-  setTimeout(function() {
-    var extname = path.extname(http_path)
-      , basename = path.basename(http_path, extname)
-      , dirname = path.dirname(http_path)
+function path_asset_cache_buster (http_path, real_path, done) {
+  setTimeout(() => {
+    const extname = path.extname(http_path);
+    const basename = path.basename(http_path, extname);
+    const dirname = path.dirname(http_path);
     
-    done({path: path.join(dirname, basename + '-v123') + extname, query: null})
-  }, 10)
+    done({
+      path: `${path.join(dirname, `${basename}-v123`)}${extname}`,
+      query: null
+    });
+  }, 10);
 }
 
-var files = fs.readdirSync(sassDir)
+function chain (done, next, err) {
+  if (err) {
+    return done(err);
+  }
+  next();
+}
 
-describe('basic', function() {
-  files.forEach(function(file) {
-    test(file, function(done) {
-      equalsFileAsync(file, 'basic', {}, done)
-    })
-  })
-})
+describe('basic', function () {
+  files.forEach(file => {
+    test(file, done => {
+      const next = chain.bind(this, done, () => {
+        equalsFileAsync(file, 'basic', dartSassOpts, done);
+      });
+      equalsFileAsync(file, 'basic', {}, next);
+    });
+  });
+});
 
-describe('asset_host', function() {
-  files.forEach(function(file) {
-    test(file, function(done) {
-      equalsFileAsync(file, 'asset_host', { asset_host: asset_host }, done)
-    })
-  })
-})
+describe('asset_host', function () {
+  files.forEach(file => {
+    test(file, done => {
+      const next = chain.bind(this, done, () => {
+        equalsFileAsync(file, 'asset_host', {
+          ...dartSassOpts,
+          ...opts
+        }, done);
+      });
+      const opts = { asset_host: asset_host };
+      equalsFileAsync(file, 'asset_host', opts, next);
+    });
+  });
+});
 
-describe('asset_cache_buster', function() {
-  describe('using query', function() {
-    files.forEach(function(file) {
-      test(file, function(done) {
-        equalsFileAsync(file, 'asset_cache_buster/query', { asset_cache_buster: query_asset_cache_buster }, done)
-      })
-    })
-  })
+describe('asset_cache_buster', function () {
+  describe('using query', function () {
+    files.forEach(file => {
+      test(file, done => {
+        const next = chain.bind(this, done, () => {
+          equalsFileAsync(file, 'asset_cache_buster/query', {
+            ...dartSassOpts,
+            ...opts
+          }, done);          
+        });
+        const opts = { asset_cache_buster: query_asset_cache_buster };
+        equalsFileAsync(file, 'asset_cache_buster/query', opts, next);
+      });
+    });
+  });
 
-  describe('using path', function() {
-    files.forEach(function(file) {
-      test(file, function(done) {
-        equalsFileAsync(file, 'asset_cache_buster/path', { asset_cache_buster: path_asset_cache_buster }, done)
-      })
-    })
-  })
-})
+  describe('using path', function () {
+    files.forEach(file => {
+      test(file, done => {
+        const next = chain.bind(this, done, () => {
+          equalsFileAsync(file, 'asset_cache_buster/path', {
+            ...dartSassOpts,
+            ...opts
+          }, done);
+        });
+        const opts = { asset_cache_buster: path_asset_cache_buster };
+        equalsFileAsync(file, 'asset_cache_buster/path', opts, next);
+      });
+    });
+  });
+});

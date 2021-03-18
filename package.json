@@ -1,10 +1,11 @@
 {
   "name": "node-sass-asset-functions",
   "version": "0.1.0",
-  "description": "asset functions for node-sass",
+  "description": "asset functions for dart-sass or node-sass",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -13,6 +14,7 @@
   "keywords": [
     "node",
     "sass",
+    "dart-sass",
     "assets",
     "image",
     "image-url",
@@ -21,7 +23,7 @@
     "font-url",
     "font-files"
   ],
-  "author": "Koen Punt <koen@fetch.nl>",
+  "author": "Alex Grant <alex@localnerve.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fetch/node-sass-asset-functions/issues"
@@ -33,6 +35,8 @@
     "node-sass": ">= 3.2 < 5"
   },
   "devDependencies": {
-    "jest": "^16.0.2"
+    "jest": "^26.6.3",
+    "eslint": "^7.22.0",
+    "sass": "^1.32.8"
   }
 }
