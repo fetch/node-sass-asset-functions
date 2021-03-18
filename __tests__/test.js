@@ -5,13 +5,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const defaultSass = require('node-sass');
-const dartSass = require('sass');
+const otherSass = require('node-sass');
+const defaultSass = require('sass');
 const assetFunctions = require('../');
 
 const sassDir = path.join(__dirname, 'scss');
 const cssDir = path.join(__dirname, 'css');
-const dartSassOpts = { sass: dartSass };
+const otherSassOpts = { sass: otherSass };
 const files = fs.readdirSync(sassDir);
 
 function renderAsync (file, options = {}, done) {
@@ -32,19 +32,24 @@ function equalsFileAsync (file, suite, options, done) {
     if (err) {
       return done(err);
     }
+
     const cssPath = path.join(cssDir, suite, file.replace(/\.scss$/, '.css'));
     fs.readFile(cssPath, (err, expected) => {
       expect(err).toBeNull();
+      if (err) {
+        return done(err);
+      }
 
       const rendered = result.css.toString();
-      const raw = expected.toString();
-
-      // eliminate all spaces and quotes from the comparison
+      const raw = expected.toString();      
+      
+      // Output style differences between node-sass and dart-sass, spacing and quotes '|".
+      // For output equality comparison, strip quotes and spaces.
       const stripRendered = rendered.replace(/\s+|"|'/g, '');
       const stripRaw = raw.replace(/\s+|"|'/g, '');
 
       expect(stripRendered).toEqual(stripRaw);
-      done(err);
+      done();
     });
   });
 }
@@ -80,10 +85,11 @@ function chain (done, next, err) {
 describe('basic', function () {
   files.forEach(file => {
     test(file, done => {
+      const run = equalsFileAsync.bind(this, file, 'basic');
       const next = chain.bind(this, done, () => {
-        equalsFileAsync(file, 'basic', dartSassOpts, done);
+        run(otherSassOpts, done);
       });
-      equalsFileAsync(file, 'basic', {}, next);
+      run({}, next);
     });
   });
 });
@@ -91,14 +97,15 @@ describe('basic', function () {
 describe('asset_host', function () {
   files.forEach(file => {
     test(file, done => {
+      const run = equalsFileAsync.bind(this, file, 'asset_host');
+      const opts = { asset_host: asset_host };
       const next = chain.bind(this, done, () => {
-        equalsFileAsync(file, 'asset_host', {
-          ...dartSassOpts,
+        run({
+          ...otherSassOpts,
           ...opts
         }, done);
       });
-      const opts = { asset_host: asset_host };
-      equalsFileAsync(file, 'asset_host', opts, next);
+      run(opts, next);
     });
   });
 });
@@ -107,14 +114,15 @@ describe('asset_cache_buster', function () {
   describe('using query', function () {
     files.forEach(file => {
       test(file, done => {
+        const run = equalsFileAsync.bind(this, file, 'asset_cache_buster/query');
+        const opts = { asset_cache_buster: query_asset_cache_buster };
         const next = chain.bind(this, done, () => {
-          equalsFileAsync(file, 'asset_cache_buster/query', {
-            ...dartSassOpts,
+          run({
+            ...otherSassOpts,
             ...opts
           }, done);          
         });
-        const opts = { asset_cache_buster: query_asset_cache_buster };
-        equalsFileAsync(file, 'asset_cache_buster/query', opts, next);
+        run(opts, next);
       });
     });
   });
@@ -122,14 +130,15 @@ describe('asset_cache_buster', function () {
   describe('using path', function () {
     files.forEach(file => {
       test(file, done => {
+        const run = equalsFileAsync.bind(this, file, 'asset_cache_buster/path');
+        const opts = { asset_cache_buster: path_asset_cache_buster };
         const next = chain.bind(this, done, () => {
-          equalsFileAsync(file, 'asset_cache_buster/path', {
-            ...dartSassOpts,
+          run({
+            ...otherSassOpts,
             ...opts
           }, done);
         });
-        const opts = { asset_cache_buster: path_asset_cache_buster };
-        equalsFileAsync(file, 'asset_cache_buster/path', opts, next);
+        run(opts, next);
       });
     });
   });

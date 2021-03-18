@@ -1,8 +1,22 @@
-# Node SASS Asset functions [![Build Status](https://travis-ci.org/fetch/node-sass-asset-functions.svg?branch=master)](https://travis-ci.org/fetch/node-sass-asset-functions) [![npmjs](https://badge.fury.io/js/node-sass-asset-functions.svg)](https://www.npmjs.com/package/node-sass-asset-functions)
+# Node SASS Asset functions
 
-To ease the transitioning from Compass to Libsass, this module provides some of Compass' asset functions for [node-sass](https://github.com/sass/node-sass)
+> Exposes a set of functions to Sass that keep physical asset location details out of your source code. Also allows one to define a cache-busting policy or specify specific asset hosts.
 
-_**NB** Please note that the `functions` option of node-sass is still experimental (>= v3.0.0)._
+![Verify](https://github.com/fetch/node-sass-asset-functions/workflows/Verify/badge.svg)
+[![npmjs](https://badge.fury.io/js/node-sass-asset-functions.svg)](https://www.npmjs.com/package/node-sass-asset-functions)
+
+_**NB** Please note that the `functions` option of dart-sass/node-sass is still experimental (>= v3.0.0)._
+
+## Origin
+
+Originally created for transition from Compass to Libsass, this module provides some of the asset functions that came with [Compass](http://compass-style.org). Tested with [dart-sass](https://github.com/sass/dart-sass) or [node-sass](https://github.com/sass/node-sass).
+
+## Breaking Change 1.0.0
+
+* [node-sass](https://github.com/sass/node-sass) is [deprecated](https://sass-lang.com/blog/libsass-is-deprecated)
+* Default Sass compiler is now the [dart-sass](https://github.com/sass/dart-sass) javascript implementation.
+* New option `sass` allows you to override the default compiler.
+* Dart Sass is now the [primary implementation of Sass](https://sass-lang.com/dart-sass), and the default sass compiler.
 
 ## Installation
 
@@ -15,12 +29,14 @@ npm install --save[-dev] node-sass-asset-functions
 Basic usage is as easy as setting the `functions` property:
 
 ```js
-var sass = require('node-sass');
-var assetFunctions = require('node-sass-asset-functions');
+const sass = require('sass');
+const fiber = require('fibers');
+const assetFunctions = require('node-sass-asset-functions');
 
 sass.render({
   functions: assetFunctions(),
   file: scss_filename,
+  fiber, // dart-sass async render performance detail
   [, options..]
 }, function(err, result) { /*...*/ });
 ```
@@ -39,14 +55,31 @@ You can specify the paths of your resources using the following options (shown w
 So if for example your images reside in `public/img` instead of `images/images`, you use it as follows:
 
 ```js
-var sass = require('node-sass');
-var assetFunctions = require('node-sass-asset-functions');
+const sass = require('sass');
+const fiber = require('fibers');
+const assetFunctions = require('node-sass-asset-functions');
 
 sass.render({
   functions: assetFunctions({
     images_path: 'public/img',
     http_images_path: '/img'
   }),
+  file: scss_filename,
+  fiber,
+  [, options..]
+}, function(err, result) { /*...*/ });
+```
+
+### Overriding the default compiler with Node-Sass
+
+Example using the node-sass compiler using the new option `sass`.
+
+```js
+const sass = require('node-sass');
+const assetFunctions = require('node-sass-asset-functions');
+
+sass.render({
+  functions: assetFunctions({ sass }),
   file: scss_filename,
   [, options..]
 }, function(err, result) { /*...*/ });
@@ -66,6 +99,7 @@ sass.render({
     }
   }),
   file: scss_filename,
+  fiber,
   [, options..]
 }, function(err, result) { /*...*/ });
 ```
@@ -82,6 +116,7 @@ sass.render({
     }
   }),
   file: scss_filename,
+  fiber,
   [, options..]
 }, function(err, result) { /*...*/ });
 ```
@@ -93,28 +128,31 @@ Here we include the file's  hexdigest in the path, using the [`hexdigest`](https
 For example, `/images/myimage.png` would become `/images/myimage-8557f1c9b01dd6fd138ba203e6a953df6a222af3.png`.
 
 ```js
-var path = require('path')
-  , fs = require('fs')
-  , hexdigest = require('hexdigest');
+const sass = require('sass');
+const fiber = require('fibers');
+const path = require('path');
+const fs = require('fs');
+const hexdigest = require('hexdigest');
 
 sass.render({
   functions: assetFunctions({
     asset_cache_buster: function(http_path, real_path, done){
       hexdigest(real_path, 'sha1', function(err, digest) {
         if (err) {
-          // an error occurred, maybe the file doesn't exists.
+          // an error occurred, maybe the file doesn't exist.
           // Calling `done` without arguments will result in an unmodified path.
           done();
         } else {
-          var extname = path.extname(http_path)
-            , basename = path.basename(http_path, extname);
-          var new_name = basename + '-' + digest + extname;
+          const extname = path.extname(http_path);
+          const basename = path.basename(http_path, extname);
+          const new_name = `${basename}-${digest}${extname}`;
           done({path: path.join(path.dirname(http_path), new_name), query: null});
         }
       });
     }
   }),
   file: scss_filename,
+  fiber,
   [, options..]
 }, function(err, result) { /*...*/ });
 ```

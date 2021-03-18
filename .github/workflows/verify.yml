@@ -3,7 +3,7 @@ on:
   push:
     branches: [ master, dart-sass ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dart-sass ]
 
 jobs:
   verify:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [10.x, 12.x, 14.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:

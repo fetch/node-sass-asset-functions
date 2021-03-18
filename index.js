@@ -1,4 +1,4 @@
-const defaultSass = require('node-sass');
+const defaultSass = require('sass');
 const Processor = require('./lib/processor');
 
 module.exports = function sassFunctions (options = {}) {

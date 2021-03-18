@@ -1,7 +1,7 @@
 {
   "name": "node-sass-asset-functions",
-  "version": "0.1.0",
-  "description": "asset functions for dart-sass or node-sass",
+  "version": "1.0.0",
+  "description": "asset functions for sass compilers",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -23,7 +23,29 @@
     "font-url",
     "font-files"
   ],
-  "author": "Alex Grant <alex@localnerve.com>",
+  "author": "Koen Punt <koen@fetch.nl>",
+  "contributors": [
+    {
+      "name": "localnerve",
+      "email": "alex@localnerve.com",
+      "url": "https://github.com/localnerve"
+    },
+    {
+      "name": "koen",
+      "email": "mail@koen.pt",
+      "url": "https://koen.pt"
+    },
+    {
+      "name": "f0urfingeredfish",
+      "email": "nick@blackholedesign.com",
+      "url": "http://blackholedesign.com"
+    },
+    {
+      "name": "markplewis",
+      "email": "markplewis1@gmail.com",
+      "url": "http://www.markplewis.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fetch/node-sass-asset-functions/issues"
@@ -32,11 +54,14 @@
   "dependencies": {
     "image-size": "^0.3.5",
     "mime": "^1.3.4",
-    "node-sass": ">= 3.2 < 5"
+    "sass": "^1.32.8"
   },
   "devDependencies": {
     "jest": "^26.6.3",
     "eslint": "^7.22.0",
-    "sass": "^1.32.8"
+    "node-sass": ">= 3.2 < 5"
+  },
+  "engines": {
+    "node": ">= 10"
   }
 }
