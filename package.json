@@ -1,6 +1,6 @@
 {
-  "name": "node-sass-asset-functions",
-  "version": "0.1.0",
+  "name": "@mycase/node-sass-asset-functions",
+  "version": "0.2.0",
   "description": "asset functions for node-sass",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,9 @@
   ],
   "author": "Koen Punt <koen@fetch.nl>",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "bugs": {
     "url": "https://github.com/fetch/node-sass-asset-functions/issues"
   },
