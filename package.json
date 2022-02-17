@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fetch/node-sass-asset-functions.git"
+    "url": "https://github.com/mycase/node-sass-asset-functions.git"
   },
   "keywords": [
     "node",
@@ -21,15 +21,15 @@
     "font-url",
     "font-files"
   ],
-  "author": "Koen Punt <koen@fetch.nl>",
+  "author": "MyCase, Inc.",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
   "bugs": {
-    "url": "https://github.com/fetch/node-sass-asset-functions/issues"
+    "url": "https://github.com/mycase/node-sass-asset-functions/issues"
   },
-  "homepage": "https://github.com/fetch/node-sass-asset-functions",
+  "homepage": "https://github.com/mycase/node-sass-asset-functions",
   "dependencies": {
     "image-size": "^0.3.5",
     "mime": "^1.3.4",
